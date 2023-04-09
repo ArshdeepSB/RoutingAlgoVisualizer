@@ -6,11 +6,10 @@ let nodesEdge = false;
 let centralized = false; 
 let labelChar = 'A';
 
-// //Djikstra's Initializations
-// let Nprime = [];
-// let destinationNode = new Node;
-
-
+//Djikstra's Initializations
+let Nprime = [];
+let destinationNode = new Node;
+let halt = false;
 //setup function only runs once at the start
 function setup() {
   //create the area we will be working in 
@@ -45,7 +44,6 @@ function draw() {
   for (var i = 0; i < edges.length; i++) {
     edges[i].line();
   } 
-
   // print(circles)
   // print(edges)
 }
@@ -81,27 +79,57 @@ function createEdges(){
   }
 }
 
-// function djikstra(startNode, destNode){
-//   //initialization
-//   Nprime.push(startNode) // adding source node to Nprime
+function djikstra(startNode, destNode){
+  //initialization
+  Nprime.push(startNode) // adding source node to Nprime
   
-//   //check all edges adjacent to source node
-//   for (var i = 0; i < edges.length; i++){
-//     if(edges[i].contains(Nprime[0])){ 
-//       print(edges[i]);
+  //check all edges adjacent to source node
+  for (var i = 0; i < edges.length; i++){
+    if(edges[i].contains(Nprime[0])){ 
+      print(edges[i]); //debug
+      //color these edges red
+      edges[i].rgb = [255,0,0];
+      //initialize the D(a) and p(a) for adjacent nodes
+      edges[i].otherNode(Nprime[0]).dOfA = edges[i].weight;
+      edges[i].otherNode(Nprime[0]).pOfA = Nprime[0].label;
+    }
+  }
 
-//       //color these edges red
-//       edges[i].rgb = [255,0,0];
-//       // Waits for user click to continue
-//       while (true) {
-//         if (mouseClicked()) {
-//           break;
-//         }
-//       }
-//       print("it worked??")
-//     }
-//   }
-// }
+  //LOOP THIS
+  // find a not in N' st D(a) is minimum
+  let min = new Node;
+  for (var i = 0; i < circles.length; i++){
+    if(Nprime.includes(circles[i]) == false && circles[i].dOfA < min.dOfA){
+      min = circles[i];
+    }
+  }
+  Nprime.push(min);
+  print("min", min) //debug
+
+  //change color for selected node
+  for (var i = 0; i < edges.length; i++){
+    if(edges[i].contains(min) && edges[i].containsLabel(min.pOfA)){
+      //create a 5 second delay and change color of minimum edge to green
+      let x = i; 
+      setTimeout(function() {
+        //  print(x, edges)
+        edges[x].rgb = [0,255,0];
+      }, 5000);
+    }
+  }
+
+  // //check all edges adjacent to source node
+  // for (var i = 0; i < edges.length; i++){
+  //   if(edges[i].contains(Nprime[Nprime.length - 1])){ 
+  //     print(edges[i]);
+  //     //color these edges red
+  //     edges[i].rgb = [255,0,0];
+  //     //update the D(a) and p(a) for adjacent nodes
+  //     edges[i].otherNode(Nprime[0]).dOfA = edges[i].weight;
+  //     edges[i].otherNode(Nprime[0]).pOfA = Nprime[0].label;
+  //   }
+  // }
+}
 
 
 // this function runs everytime a mouse is pressed on canvas
@@ -126,22 +154,23 @@ function mousePressed() {
 
   }
   
-  // //Starting Djikstra's Algorithm
-  // if(centralized == true){
-  //   //Initialization
-  //   for (var k = 0; k < circles.length; k++) {
-  //     if (dist(mouseX, mouseY, circles[k].x, circles[k].y) <= 25){
-  //       tempEdges.push(circles[k])      
-  //     }
-  //     if(tempEdges.length == 2){
-  //         print(tempEdges[0], tempEdges[1])
-  //         tempEdges[0].rgb = [255,0,0];
-  //         tempEdges[1].rgb = [0,255,0];
-  //         djikstra(tempEdges[0], tempEdges[1])
-  //         tempEdges = []
-  //     }
-  //   }
-  // }
+  //Starting Djikstra's Algorithm
+  if(centralized == true){
+    //Select starting and ending node
+    for (var k = 0; k < circles.length; k++) {
+      if (dist(mouseX, mouseY, circles[k].x, circles[k].y) <= 25){//checks if click is within area of node
+        tempEdges.push(circles[k]);      
+      }
+      if(tempEdges.length == 2){
+          print(tempEdges[0], tempEdges[1]);
+          tempEdges[0].rgb = [255,0,0];
+          tempEdges[1].rgb = [0,255,0];
+          djikstra(tempEdges[0], tempEdges[1]); //run the djikstra algo
+          tempEdges = [];
+          break;
+      }
+    }
+  }
 }
 
 // Node Object
@@ -153,6 +182,10 @@ function Node(x, y) {
   this.label = labelChar;
   labelChar = String.fromCharCode(labelChar.charCodeAt(0) + 1); //incrementing char
   //Add distance vector for bellman ford
+
+  //for Djikstra's algo
+  this.dOfA = 9999;
+  this.pOfA = '';
 
   this.ellipse = function() { //changes the default ellipse function
     noStroke();
@@ -184,6 +217,15 @@ function Edge(c1, c2){
 
   this.contains = function(circ){
     if(circ == this.node1 || circ == this.node2){
+      return true;
+    }
+    else{
+      return false;
+    }
+  }
+
+  this.containsLabel = function(str){
+    if(str == this.node1.label || str == this.node2.label){
       return true;
     }
     else{
