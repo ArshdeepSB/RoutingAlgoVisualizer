@@ -10,6 +10,8 @@ let labelChar = 'A';
 // let Nprime = [];
 // let destinationNode = new Node;
 
+
+//setup function only runs once at the start
 function setup() {
   //create the area we will be working in 
   createCanvas(windowWidth, windowHeight);
@@ -32,6 +34,7 @@ function setup() {
   // start_cent.mousePressed(startCent);
 }
 
+//continuously loops and draws to canvas
 function draw() {
   background(0);
 
@@ -103,7 +106,7 @@ function createEdges(){
 
 // this function runs everytime a mouse is pressed on canvas
 function mousePressed() {
-  //creating nodes
+  //creating objects nodes
   if (nodesButton == true && mouseX > 50 && mouseY > 50){
       circles.push(new Node(mouseX, mouseY));
   }
@@ -111,13 +114,13 @@ function mousePressed() {
   //creating edges
   if (nodesEdge == true && mouseX > 50 && mouseY > 50){
     for (var i = 0; i < circles.length; i++) {
-      if (dist(mouseX, mouseY, circles[i].x, circles[i].y) <= 25){
-        tempEdges.push(circles[i])      
+      if (dist(mouseX, mouseY, circles[i].x, circles[i].y) <= 25){ //checks if click is within area of node
+        tempEdges.push(circles[i]);
       }
-      if(tempEdges.length == 2){
+      if(tempEdges.length == 2){ //once 2 nodes are found then creates edge object
           print(tempEdges[0], tempEdges[1])
           edges.push(new Edge(tempEdges[0], tempEdges[1]))
-          tempEdges = [];
+          tempEdges = []; 
       }
     }
 
@@ -151,7 +154,7 @@ function Node(x, y) {
   labelChar = String.fromCharCode(labelChar.charCodeAt(0) + 1); //incrementing char
   //Add distance vector for bellman ford
 
-  this.ellipse = function() {
+  this.ellipse = function() { //changes the default ellipse function
     noStroke();
     fill(this.rgb[0], this.rgb[1], this.rgb[2]);
     ellipse(this.x, this.y, this.size, this.size);
@@ -172,7 +175,7 @@ function Edge(c1, c2){
   this.weight = int(random(20))
   this.rgb = [255,255,255]
 
-  this.line = function() {
+  this.line = function() { // changes the default line function
     stroke(this.rgb[0], this.rgb[1], this.rgb[2]);
     line(this.x1,this.y1,this.x2,this.y2);
     textSize(15);
