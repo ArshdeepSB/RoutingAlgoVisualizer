@@ -4,15 +4,17 @@ let tempEdges = [];
 let nodesButton = false;
 let nodesEdge = false;
 let centralized = false; 
-let labelChar = '@';
+let labelChar = 'A';
 
-//Djikstra's Initializations
-let Nprime = [];
-let destinationNode = new Node;
+// //Djikstra's Initializations
+// let Nprime = [];
+// let destinationNode = new Node;
 
 function setup() {
-  
+  //create the area we will be working in 
   createCanvas(windowWidth, windowHeight);
+
+  //Buttons
   createCircle = createButton('Nodes');
   createCircle.position(0, 0);
   createCircle.mousePressed(createNodes);
@@ -49,10 +51,11 @@ function windowResized() {
   resizeCanvas(windowWidth, windowHeight);
 }
 
+//Handling Button Event Booleans
 function startCent(){
   nodesButton = false; 
   nodesEdge = false;
-  centralized = true;
+  centralized = true; // disables all other buttons
 }
 
 function createNodes(){
@@ -64,6 +67,7 @@ function createNodes(){
     nodesButton = true;
   }
 }
+
 function createEdges(){
   if(nodesButton == false){
     nodesEdge = true;
@@ -74,6 +78,30 @@ function createEdges(){
   }
 }
 
+// function djikstra(startNode, destNode){
+//   //initialization
+//   Nprime.push(startNode) // adding source node to Nprime
+  
+//   //check all edges adjacent to source node
+//   for (var i = 0; i < edges.length; i++){
+//     if(edges[i].contains(Nprime[0])){ 
+//       print(edges[i]);
+
+//       //color these edges red
+//       edges[i].rgb = [255,0,0];
+//       // Waits for user click to continue
+//       while (true) {
+//         if (mouseClicked()) {
+//           break;
+//         }
+//       }
+//       print("it worked??")
+//     }
+//   }
+// }
+
+
+// this function runs everytime a mouse is pressed on canvas
 function mousePressed() {
   //creating nodes
   if (nodesButton == true && mouseX > 50 && mouseY > 50){
@@ -95,31 +123,25 @@ function mousePressed() {
 
   }
   
-  //Starting Djikstra's Algorithm
-  if(centralized == true){
-    //Initialization
-    for (var k = 0; k < circles.length; k++) {
-      if (dist(mouseX, mouseY, circles[k].x, circles[k].y) <= 25){
-        tempEdges.push(circles[k])      
-      }
-      if(tempEdges.length == 2){
-          print(tempEdges[0], tempEdges[1])
-          tempEdges[0].rgb = [255,0,0];
-          tempEdges[1].rgb = [0,255,0];
-          Nprime.push(tempEdges[0]) // adding source node to Nprime
-          destinationNode = tempEdges[1]
-          tempEdges = []
-      }
-      for (var i = 0; i < edges.length; i++){
-        if(edges[i].contains(Nprime[0])){ //check all edges adjacent to source node
-          print(edges[i]);
-        }
-      }
-
-    }
-  }
+  // //Starting Djikstra's Algorithm
+  // if(centralized == true){
+  //   //Initialization
+  //   for (var k = 0; k < circles.length; k++) {
+  //     if (dist(mouseX, mouseY, circles[k].x, circles[k].y) <= 25){
+  //       tempEdges.push(circles[k])      
+  //     }
+  //     if(tempEdges.length == 2){
+  //         print(tempEdges[0], tempEdges[1])
+  //         tempEdges[0].rgb = [255,0,0];
+  //         tempEdges[1].rgb = [0,255,0];
+  //         djikstra(tempEdges[0], tempEdges[1])
+  //         tempEdges = []
+  //     }
+  //   }
+  // }
 }
 
+// Node Object
 function Node(x, y) {
   this.x = x;
   this.y = y;
@@ -139,31 +161,40 @@ function Node(x, y) {
   }
 }
 
-
+//Edge Object
 function Edge(c1, c2){
   this.x1 = c1.x;
   this.y1 = c1.y;
   this.x2 = c2.x;
   this.y2 = c2.y;
-  this.n1 = c1;
-  this.n2 = c2;
+  this.node1 = c1;
+  this.node2 = c2;
   this.weight = int(random(20))
   this.rgb = [255,255,255]
 
   this.line = function() {
-    stroke(255);
-    fill(this.rgb[0], this.rgb[1], this.rgb[2]);
+    stroke(this.rgb[0], this.rgb[1], this.rgb[2]);
     line(this.x1,this.y1,this.x2,this.y2);
     textSize(15);
     text(nf(this.weight), (this.x1 + this.x2)/2, (this.y1 + this.y2)/2)
   }
 
-  this.contains = function(c){
-    if(c == this.n1 || c == this.n2){
+  this.contains = function(circ){
+    if(circ == this.node1 || circ == this.node2){
       return true;
     }
     else{
       return false;
     }
+  }
+
+  this.otherNode = function(circ){
+    if(circ == this.node1){
+      return this.node2;
+    }
+    else if(circ == this.node2){
+      return this.node1;
+    }
+    else{return null}
   }
 }
