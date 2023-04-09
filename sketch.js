@@ -4,6 +4,11 @@ let tempEdges = [];
 let nodesButton = false;
 let nodesEdge = false;
 let centralized = false; 
+let labelChar = '@';
+
+//Djikstra's Initializations
+let Nprime = [];
+let destinationNode = new Node;
 
 function setup() {
   
@@ -23,8 +28,6 @@ function setup() {
   start_dec = createButton("De-Centralized")
   start_dec.position(100, windowHeight-30);
   // start_cent.mousePressed(startCent);
-  
-  
 }
 
 function draw() {
@@ -37,6 +40,9 @@ function draw() {
   for (var i = 0; i < edges.length; i++) {
     edges[i].line();
   } 
+
+  // print(circles)
+  // print(edges)
 }
 
 function windowResized() {
@@ -86,10 +92,12 @@ function mousePressed() {
           tempEdges = [];
       }
     }
+
   }
   
-  //Starting Centralized Algorithm
+  //Starting Djikstra's Algorithm
   if(centralized == true){
+    //Initialization
     for (var k = 0; k < circles.length; k++) {
       if (dist(mouseX, mouseY, circles[k].x, circles[k].y) <= 25){
         tempEdges.push(circles[k])      
@@ -98,8 +106,16 @@ function mousePressed() {
           print(tempEdges[0], tempEdges[1])
           tempEdges[0].rgb = [255,0,0];
           tempEdges[1].rgb = [0,255,0];
-          tempEdges = [];
+          Nprime.push(tempEdges[0]) // adding source node to Nprime
+          destinationNode = tempEdges[1]
+          tempEdges = []
       }
+      for (var i = 0; i < edges.length; i++){
+        if(edges[i].contains(Nprime[0])){ //check all edges adjacent to source node
+          print(edges[i]);
+        }
+      }
+
     }
   }
 }
@@ -109,13 +125,18 @@ function Node(x, y) {
   this.y = y;
   this.size = 50;
   this.rgb = [255,255,255];
+  this.label = labelChar;
+  labelChar = String.fromCharCode(labelChar.charCodeAt(0) + 1); //incrementing char
+  //Add distance vector for bellman ford
 
   this.ellipse = function() {
     noStroke();
     fill(this.rgb[0], this.rgb[1], this.rgb[2]);
     ellipse(this.x, this.y, this.size, this.size);
+    fill(0);
+    textSize(32);
+    text(this.label, this.x-10, this.y+10);
   }
-
 }
 
 
@@ -124,11 +145,25 @@ function Edge(c1, c2){
   this.y1 = c1.y;
   this.x2 = c2.x;
   this.y2 = c2.y;
+  this.n1 = c1;
+  this.n2 = c2;
   this.weight = int(random(20))
+  this.rgb = [255,255,255]
 
   this.line = function() {
     stroke(255);
+    fill(this.rgb[0], this.rgb[1], this.rgb[2]);
     line(this.x1,this.y1,this.x2,this.y2);
+    textSize(15);
     text(nf(this.weight), (this.x1 + this.x2)/2, (this.y1 + this.y2)/2)
+  }
+
+  this.contains = function(c){
+    if(c == this.n1 || c == this.n2){
+      return true;
+    }
+    else{
+      return false;
+    }
   }
 }
