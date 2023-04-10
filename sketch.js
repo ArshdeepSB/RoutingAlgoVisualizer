@@ -168,6 +168,7 @@ function mousePressed() {
             weightInput.hide();
             edges.push(new Edge(tempEdges[0], tempEdges[1], weight));
             tempEdges = [];
+            weightInput.value('');
           });
       }
     }
