@@ -4,15 +4,13 @@ let tempEdges = [];
 let nodesButton = false;
 let nodesEdge = false;
 let centralized = false; 
-let decentralized = false;
-let labelChar = '@';
-let weightInput;
-let inputDelay = 1000;
+let labelChar = 'A';
 
-//Djikstra's Initializations
-let Nprime = [];
-let destinationNode = new Node;
-let halt = false;
+// //Djikstra's Initializations
+// let Nprime = [];
+// let destinationNode = new Node;
+
+
 //setup function only runs once at the start
 function setup() {
   //create the area we will be working in 
@@ -33,15 +31,7 @@ function setup() {
   
   start_dec = createButton("De-Centralized")
   start_dec.position(100, windowHeight-30);
-  start_dec.mousePressed(startDec);
-
-
-  //Input Box
-  weightInput = createInput('');
-  weightInput.position(120, 0);
-  weightInput.size(50, 20);
-  weightInput.attribute('placeholder', 'Weight');
-  weightInput.hide();
+  // start_cent.mousePressed(startCent);
 }
 
 //continuously loops and draws to canvas
@@ -55,6 +45,7 @@ function draw() {
   for (var i = 0; i < edges.length; i++) {
     edges[i].line();
   } 
+
   // print(circles)
   // print(edges)
 }
@@ -69,13 +60,6 @@ function startCent(){
   nodesEdge = false;
   centralized = true; // disables all other buttons
 }
-
-function startDec() {
-  nodesButton = false;
-  nodesEdge = false;
-  decentralized = true; // disables all other buttons
-}
-
 
 function createNodes(){
   if(nodesEdge == false){
@@ -97,117 +81,29 @@ function createEdges(){
   }
 }
 
-function djikstra(startNode, destNode){
-  //initialization
-  Nprime.push(startNode) // adding source node to Nprime
+// function djikstra(startNode, destNode){
+//   //initialization
+//   Nprime.push(startNode) // adding source node to Nprime
   
-  //check all edges adjacent to source node
-  for (var i = 0; i < edges.length; i++){
-    if(edges[i].contains(Nprime[0])){ 
-      print(edges[i]); //debug
-      //color these edges red
-      edges[i].rgb = [255,0,0];
-      //initialize the D(a) and p(a) for adjacent nodes
-      edges[i].otherNode(Nprime[0]).dOfA = edges[i].weight;
-      edges[i].otherNode(Nprime[0]).pOfA = Nprime[0].label;
-    }
-  }
+//   //check all edges adjacent to source node
+//   for (var i = 0; i < edges.length; i++){
+//     if(edges[i].contains(Nprime[0])){ 
+//       print(edges[i]);
 
-  while(Nprime.length != circles.length){
-    // find a not in N' st D(a) is minimum
-    let min = circles[0]
-    for (var i = 0; i < circles.length; i++){
-      if(Nprime.includes(circles[i]) == false && circles[i].dOfA < min.dOfA){
-        min = circles[i];
-      }
-    }
-    Nprime.push(min);
-    print("min", min) //debug
-
-    //change color for selected node
-    for (var i = 0; i < edges.length; i++){
-      if(edges[i].contains(min) && edges[i].containsLabel(min.pOfA)){
-        //create a 5 second delay and change color of minimum edge to green
-        let x = i; 
-        setTimeout(function() {
-          //  print(x, edges)
-          edges[x].rgb = [0,255,0];
-        }, inputDelay + 1000);
-      }
-    }
-
-    //check all edges adjacent to B node that are not in N'
-    for (var i = 0; i < edges.length; i++){
-      if(edges[i].contains(min) && Nprime.includes(edges[i].otherNode(min)) == false){
-        print("adjacent", edges[i]);
-
-        //color these edges red
-        edges[i].rgb = [255,0,0];
-
-        //update the D(a) and p(a) for adjacent nodes
-        adjNode = edges[i].otherNode(min);
-
-        if(edges[i].weight < adjNode.dOfA){ //updates D(a) if new edge has lower cost
-          adjNode.dOfA = edges[i].weight;
-          adjNode.pOfA = min.label;
-        }
-      }
-    }
-  }
-}
+//       //color these edges red
+//       edges[i].rgb = [255,0,0];
+//       // Waits for user click to continue
+//       while (true) {
+//         if (mouseClicked()) {
+//           break;
+//         }
+//       }
+//       print("it worked??")
+//     }
+//   }
+// }
 
 
-function distanceVector(startNode, destNode) {
-  let distanceVectors = new Map();
-  let updated = true;
-
-  for (let node of circles) {
-    let nodeDistances = new Map();
-    for (let otherNode of circles) {
-      if (node === otherNode) {
-        nodeDistances.set(otherNode.label, { distance: 0, nextHop: null });
-      } else {
-        nodeDistances.set(otherNode.label, { distance: Infinity, nextHop: null });
-      }
-    }
-    distanceVectors.set(node.label, nodeDistances);
-  }
-
-  for (let edge of edges) {
-    distanceVectors.get(edge.node1.label).set(edge.node2.label, { distance: edge.weight, nextHop: edge.node2.label });
-    distanceVectors.get(edge.node2.label).set(edge.node1.label, { distance: edge.weight, nextHop: edge.node1.label });
-  }
-
-  while (updated) {
-    updated = false;
-    for (let node of circles) {
-      for (let otherNode of circles) {
-        if (node === otherNode) continue;
-        let oldDist = distanceVectors.get(node.label).get(otherNode.label).distance;
-        let newDist = Infinity;
-        let newNextHop = null;
-        for (let middleNode of circles) {
-          if (middleNode === node || middleNode === otherNode) continue;
-          let distThroughMiddle = distanceVectors.get(node.label).get(middleNode.label).distance +
-            distanceVectors.get(middleNode.label).get(otherNode.label).distance;
-          if (distThroughMiddle < newDist) {
-            newDist = distThroughMiddle;
-            newNextHop = middleNode.label;
-          }
-        }
-        if (newDist < oldDist) {
-          updated = true;
-          distanceVectors.get(node.label).set(otherNode.label, { distance: newDist, nextHop: newNextHop });
-        }
-      }
-    }
-  }
-
-  console.log("Distance from " + startNode.label + " to " + destNode.label + " is " +
-    distanceVectors.get(startNode.label).get(destNode.label).distance);
-  console.log("Next hop from " + startNode.label + " to " + destNode.label + " is " +
-    distanceVectors.get(startNode.label).get(destNode.label).nextHop);
-}
 // this function runs everytime a mouse is pressed on canvas
 function mousePressed() {
   //creating objects nodes
@@ -223,51 +119,29 @@ function mousePressed() {
       }
       if(tempEdges.length == 2){ //once 2 nodes are found then creates edge object
           print(tempEdges[0], tempEdges[1])
-          weightInput.show();
-          weightInput.input(function() {
-            let weight = int(weightInput.value());
-            weightInput.hide();
-            edges.push(new Edge(tempEdges[0], tempEdges[1], weight));
-            tempEdges = [];
-          });
+          edges.push(new Edge(tempEdges[0], tempEdges[1]))
+          tempEdges = []; 
       }
     }
 
   }
   
-  //Starting Djikstra's Algorithm
-  if(centralized == true){
-    //Select starting and ending node
-    for (var k = 0; k < circles.length; k++) {
-      if (dist(mouseX, mouseY, circles[k].x, circles[k].y) <= 25){//checks if click is within area of node
-        tempEdges.push(circles[k]);      
-      }
-      if(tempEdges.length == 2){
-          print(tempEdges[0], tempEdges[1]);
-          tempEdges[0].rgb = [255,0,0];
-          tempEdges[1].rgb = [0,255,0];
-          djikstra(tempEdges[0], tempEdges[1]); //run the djikstra algo
-          tempEdges = [];
-          break;
-      }
-    }
-  }
-    //Starting Distance Vector Algorithm
-  if (decentralized == true) {
-    for (var k = 0; k < circles.length; k++) {
-      if (dist(mouseX, mouseY, circles[k].x, circles[k].y) <= 25) { //checks if click is within area of node
-        tempEdges.push(circles[k]);
-      }
-      if (tempEdges.length == 2) {
-        print(tempEdges[0], tempEdges[1]);
-        tempEdges[0].rgb = [255, 0, 0];
-        tempEdges[1].rgb = [0, 255, 0];
-        distanceVector(tempEdges[0], tempEdges[1]); //run the distance vector algorithm
-        tempEdges = [];
-        break;
-      }
-    }
-  }
+  // //Starting Djikstra's Algorithm
+  // if(centralized == true){
+  //   //Initialization
+  //   for (var k = 0; k < circles.length; k++) {
+  //     if (dist(mouseX, mouseY, circles[k].x, circles[k].y) <= 25){
+  //       tempEdges.push(circles[k])      
+  //     }
+  //     if(tempEdges.length == 2){
+  //         print(tempEdges[0], tempEdges[1])
+  //         tempEdges[0].rgb = [255,0,0];
+  //         tempEdges[1].rgb = [0,255,0];
+  //         djikstra(tempEdges[0], tempEdges[1])
+  //         tempEdges = []
+  //     }
+  //   }
+  // }
 }
 
 // Node Object
@@ -280,10 +154,6 @@ function Node(x, y) {
   labelChar = String.fromCharCode(labelChar.charCodeAt(0) + 1); //incrementing char
   //Add distance vector for bellman ford
 
-  //for Djikstra's algo
-  this.dOfA = 9999;
-  this.pOfA = '';
-
   this.ellipse = function() { //changes the default ellipse function
     noStroke();
     fill(this.rgb[0], this.rgb[1], this.rgb[2]);
@@ -294,16 +164,15 @@ function Node(x, y) {
   }
 }
 
-
 //Edge Object
-function Edge(c1, c2, w){
+function Edge(c1, c2){
   this.x1 = c1.x;
   this.y1 = c1.y;
   this.x2 = c2.x;
   this.y2 = c2.y;
   this.node1 = c1;
   this.node2 = c2;
-  this.weight = w
+  this.weight = int(random(20))
   this.rgb = [255,255,255]
 
   this.line = function() { // changes the default line function
@@ -315,15 +184,6 @@ function Edge(c1, c2, w){
 
   this.contains = function(circ){
     if(circ == this.node1 || circ == this.node2){
-      return true;
-    }
-    else{
-      return false;
-    }
-  }
-
-  this.containsLabel = function(str){
-    if(str == this.node1.label || str == this.node2.label){
       return true;
     }
     else{
