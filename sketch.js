@@ -95,40 +95,47 @@ function djikstra(startNode, destNode){
     }
   }
 
-  //LOOP THIS
-  // find a not in N' st D(a) is minimum
-  let min = new Node;
-  for (var i = 0; i < circles.length; i++){
-    if(Nprime.includes(circles[i]) == false && circles[i].dOfA < min.dOfA){
-      min = circles[i];
+  while(Nprime.length != circles.length){
+    // find a not in N' st D(a) is minimum
+    let min = circles[0]
+    for (var i = 0; i < circles.length; i++){
+      if(Nprime.includes(circles[i]) == false && circles[i].dOfA < min.dOfA){
+        min = circles[i];
+      }
+    }
+    Nprime.push(min);
+    print("min", min) //debug
+
+    //change color for selected node
+    for (var i = 0; i < edges.length; i++){
+      if(edges[i].contains(min) && edges[i].containsLabel(min.pOfA)){
+        //create a 5 second delay and change color of minimum edge to green
+        let x = i; 
+        setTimeout(function() {
+          //  print(x, edges)
+          edges[x].rgb = [0,255,0];
+        }, 5000);
+      }
+    }
+
+    //check all edges adjacent to B node that are not in N'
+    for (var i = 0; i < edges.length; i++){
+      if(edges[i].contains(min) && Nprime.includes(edges[i].otherNode(min)) == false){
+        print("adjacent", edges[i]);
+
+        //color these edges red
+        edges[i].rgb = [255,0,0];
+
+        //update the D(a) and p(a) for adjacent nodes
+        adjNode = edges[i].otherNode(min);
+
+        if(edges[i].weight < adjNode.dOfA){ //updates D(a) if new edge has lower cost
+          adjNode.dOfA = edges[i].weight;
+          adjNode.dOfA = min.label;
+        }
+      }
     }
   }
-  Nprime.push(min);
-  print("min", min) //debug
-
-  //change color for selected node
-  for (var i = 0; i < edges.length; i++){
-    if(edges[i].contains(min) && edges[i].containsLabel(min.pOfA)){
-      //create a 5 second delay and change color of minimum edge to green
-      let x = i; 
-      setTimeout(function() {
-        //  print(x, edges)
-        edges[x].rgb = [0,255,0];
-      }, 5000);
-    }
-  }
-
-  // //check all edges adjacent to source node
-  // for (var i = 0; i < edges.length; i++){
-  //   if(edges[i].contains(Nprime[Nprime.length - 1])){ 
-  //     print(edges[i]);
-  //     //color these edges red
-  //     edges[i].rgb = [255,0,0];
-  //     //update the D(a) and p(a) for adjacent nodes
-  //     edges[i].otherNode(Nprime[0]).dOfA = edges[i].weight;
-  //     edges[i].otherNode(Nprime[0]).pOfA = Nprime[0].label;
-  //   }
-  // }
 }
 
 
