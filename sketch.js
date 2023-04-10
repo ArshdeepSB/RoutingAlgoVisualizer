@@ -4,7 +4,8 @@ let tempEdges = [];
 let nodesButton = false;
 let nodesEdge = false;
 let centralized = false; 
-let labelChar = 'A';
+let labelChar = '@';
+let weightInput;
 
 //Djikstra's Initializations
 let Nprime = [];
@@ -31,6 +32,13 @@ function setup() {
   start_dec = createButton("De-Centralized")
   start_dec.position(100, windowHeight-30);
   // start_cent.mousePressed(startCent);
+
+  //Input Box
+  weightInput = createInput('');
+  weightInput.position(120, 0);
+  weightInput.size(50, 20);
+  weightInput.attribute('placeholder', 'Weight');
+  weightInput.hide();
 }
 
 //continuously loops and draws to canvas
@@ -131,7 +139,7 @@ function djikstra(startNode, destNode){
 
         if(edges[i].weight < adjNode.dOfA){ //updates D(a) if new edge has lower cost
           adjNode.dOfA = edges[i].weight;
-          adjNode.dOfA = min.label;
+          adjNode.pOfA = min.label;
         }
       }
     }
@@ -154,8 +162,13 @@ function mousePressed() {
       }
       if(tempEdges.length == 2){ //once 2 nodes are found then creates edge object
           print(tempEdges[0], tempEdges[1])
-          edges.push(new Edge(tempEdges[0], tempEdges[1]))
-          tempEdges = []; 
+          weightInput.show();
+          weightInput.input(function() {
+            let weight = int(weightInput.value());
+            weightInput.hide();
+            edges.push(new Edge(tempEdges[0], tempEdges[1], weight));
+            tempEdges = [];
+          });
       }
     }
 
@@ -205,14 +218,14 @@ function Node(x, y) {
 }
 
 //Edge Object
-function Edge(c1, c2){
+function Edge(c1, c2, w){
   this.x1 = c1.x;
   this.y1 = c1.y;
   this.x2 = c2.x;
   this.y2 = c2.y;
   this.node1 = c1;
   this.node2 = c2;
-  this.weight = int(random(20))
+  this.weight = w
   this.rgb = [255,255,255]
 
   this.line = function() { // changes the default line function
