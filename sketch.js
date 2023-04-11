@@ -185,19 +185,23 @@ function distanceVector(startNode, destNode) {
         if (node === otherNode) continue;
         let oldDist = distanceVectors.get(node.label).get(otherNode.label).distance;
         let newDist = Infinity;
+        // print(distanceVectors.get(node.label).get(otherNode.label))
         let newNextHop = null;
+        
         for (let middleNode of circles) {
           if (middleNode === node || middleNode === otherNode) continue;
           let distThroughMiddle = distanceVectors.get(node.label).get(middleNode.label).distance +
             distanceVectors.get(middleNode.label).get(otherNode.label).distance;
           if (distThroughMiddle < newDist) {
             newDist = distThroughMiddle;
-            newNextHop = middleNode.label;
+            newNextHop = distanceVectors.get(node.label).get(middleNode.label).nextHop;
           }
+          
         }
         if (newDist < oldDist) {
           updated = true;
           distanceVectors.get(node.label).set(otherNode.label, { distance: newDist, nextHop: newNextHop });
+          print(distanceVectors)
         }
       }
     }
