@@ -111,18 +111,18 @@ function createEdges(){
 function djikstra(startNode, destNode){
   //initialization
   Nprime.push(startNode) // adding source node to Nprime
-  console.log("1. Our start node is: ", startNode);
+  console.log("Our start node is: " + startNode.label);
   //check all edges adjacent to source node
-  console.log("2. Initialize the D(a) and p(a) for adjacent nodes: ");
+  console.log("Initialize the D(a) and p(a) for adjacent nodes: ");
   for (var i = 0; i < edges.length; i++){
     if(edges[i].contains(Nprime[0])){ 
-      print(edges[i]); //debug
+      // print(edges[i]); //debug
       //color these edges red
       edges[i].rgb = [255,0,0];
       //initialize the D(a) and p(a) for adjacent nodes
       edges[i].otherNode(Nprime[0]).dOfA = edges[i].weight;
       edges[i].otherNode(Nprime[0]).pOfA = Nprime[0].label;
-      console.log(edges[i].otherNode().label, ": D(a):",  edges[i].otherNode(Nprime[0]).dOfA, " p(a):", edges[i].otherNode(Nprime[0]).pOfA);
+      console.log(edges[i].otherNode(Nprime[0]).label +  ": D(a): " +   edges[i].otherNode(Nprime[0]).dOfA +  " p(a):" +  edges[i].otherNode(Nprime[0]).pOfA);
     }
   }
 
@@ -134,7 +134,7 @@ function djikstra(startNode, destNode){
         min = circles[i];
       }
     }
-    console.log("3. Find edge with lowest D(a): ",min.label);
+    console.log("Find edge with lowest D(a): " + min.label);
     Nprime.push(min);
     // print("min", min) //debug
 
@@ -154,8 +154,8 @@ function djikstra(startNode, destNode){
     //check all edges adjacent to B node that are not in N'
     for (var i = 0; i < edges.length; i++){
       if(edges[i].contains(min) && Nprime.includes(edges[i].otherNode(min)) == false){
-        print("adjacent", edges[i]);
-
+        // print("adjacent", edges[i]);
+        console.log();
         //color these edges red
         edges[i].rgb = [255,0,0];
 
@@ -216,7 +216,7 @@ function distanceVector(startNode, destNode) {
         if (newDist < oldDist) {
           updated = true;
           distanceVectors.get(node.label).set(otherNode.label, { distance: newDist, nextHop: newNextHop });
-          print(distanceVectors)
+          // print(distanceVectors)
         }
       }
     }
@@ -248,7 +248,7 @@ function mousePressed() {
         tempEdges.push(circles[i]);
       }
       if(tempEdges.length == 2){ //once 2 nodes are found then creates edge object
-          print(tempEdges[0], tempEdges[1])
+          // print(tempEdges[0], tempEdges[1])
           weightInput.show();
           weightInput.input(function() {
             let weight = int(weightInput.value());
