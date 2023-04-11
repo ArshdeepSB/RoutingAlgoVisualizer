@@ -132,7 +132,8 @@ function djikstra(startNode, destNode){
         setTimeout(function() {
           //  print(x, edges)
           edges[x].rgb = [0,255,0];
-        }, inputDelay + 1000);
+        }, inputDelay);
+        inputDelay = inputDelay + 1000;
       }
     }
 
