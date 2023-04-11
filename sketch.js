@@ -9,6 +9,16 @@ let labelChar = '@';
 let weightInput;
 let inputDelay = 1000;
 
+
+(function() {
+  let oldLog = console.log;
+  console.log = function(message) {
+    oldLog.apply(console, arguments);
+    let consoleContents = document.getElementById('console-contents');
+    consoleContents.innerHTML += message + '<br>';
+  };
+})();
+
 //Djikstra's Initializations
 let Nprime = [];
 let destinationNode = new Node;
@@ -16,8 +26,9 @@ let halt = false;
 //setup function only runs once at the start
 function setup() {
   //create the area we will be working in 
-  createCanvas(windowWidth, windowHeight);
-
+  // createCanvas(windowWidth, windowHeight);
+  let canvas = createCanvas(windowWidth, windowHeight);
+  canvas.parent('canvas-container');
   //Buttons
   createCircle = createButton('Nodes');
   createCircle.position(0, 0);
@@ -100,8 +111,9 @@ function createEdges(){
 function djikstra(startNode, destNode){
   //initialization
   Nprime.push(startNode) // adding source node to Nprime
-  
+  console.log("1. Our start node is: ", startNode);
   //check all edges adjacent to source node
+  console.log("2. Initialize the D(a) and p(a) for adjacent nodes: ");
   for (var i = 0; i < edges.length; i++){
     if(edges[i].contains(Nprime[0])){ 
       print(edges[i]); //debug
@@ -110,6 +122,7 @@ function djikstra(startNode, destNode){
       //initialize the D(a) and p(a) for adjacent nodes
       edges[i].otherNode(Nprime[0]).dOfA = edges[i].weight;
       edges[i].otherNode(Nprime[0]).pOfA = Nprime[0].label;
+      console.log(edges[i].otherNode().label, ": D(a):",  edges[i].otherNode(Nprime[0]).dOfA, " p(a):", edges[i].otherNode(Nprime[0]).pOfA);
     }
   }
 
@@ -121,8 +134,9 @@ function djikstra(startNode, destNode){
         min = circles[i];
       }
     }
+    console.log("3. Find edge with lowest D(a): ",min.label);
     Nprime.push(min);
-    print("min", min) //debug
+    // print("min", min) //debug
 
     //change color for selected node
     for (var i = 0; i < edges.length; i++){
@@ -241,7 +255,9 @@ function mousePressed() {
             weightInput.hide();
             edges.push(new Edge(tempEdges[0], tempEdges[1], weight));
             tempEdges = [];
+            weightInput.value('');
           });
+          
       }
     }
 
@@ -252,10 +268,10 @@ function mousePressed() {
     //Select starting and ending node
     for (var k = 0; k < circles.length; k++) {
       if (dist(mouseX, mouseY, circles[k].x, circles[k].y) <= 25){//checks if click is within area of node
-        tempEdges.push(circles[k]);      
+        tempEdges.push(circles[k]);
       }
       if(tempEdges.length == 2){
-          print(tempEdges[0], tempEdges[1]);
+          // print(tempEdges[0], tempEdges[1]);
           tempEdges[0].rgb = [255,0,0];
           tempEdges[1].rgb = [0,255,0];
           djikstra(tempEdges[0], tempEdges[1]); //run the djikstra algo
