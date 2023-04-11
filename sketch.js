@@ -3,6 +3,8 @@ let edges = []; // array of edges
 let tempEdges = [];
 let nodesButton = false;
 let nodesEdge = false;
+let clearButton = false;
+let resetDiagram = false;
 let centralized = false; 
 let decentralized = false;
 let labelChar = '@';
@@ -46,6 +48,14 @@ function setup() {
   start_dec.position(100, windowHeight-30);
   start_dec.mousePressed(startDec);
 
+  createClear = createButton("Clear Diagram");
+  createClear.position(0,30);
+  createClear.mousePressed(clearDiagram);
+  
+  resetDiagram = createButton("Reset Diagram");
+  resetDiagram.position(110,30);
+  resetDiagram.mousePressed(createReset);
+
 
   //Input Box
   weightInput = createInput('');
@@ -79,12 +89,14 @@ function startCent(){
   nodesButton = false; 
   nodesEdge = false;
   centralized = true; // disables all other buttons
+  decentralized = false;
 }
 
 function startDec() {
   nodesButton = false;
   nodesEdge = false;
   decentralized = true; // disables all other buttons
+  centralized = false;
 }
 
 
@@ -106,6 +118,39 @@ function createEdges(){
     nodesButton = false; 
     nodesEdge = true;
   }
+}
+
+function clearDiagram(){
+    circles = [];
+    edges = [];
+    tempEdges = [];
+    nodesEdge = false; 
+    nodesButton = false;
+    centralized = false;
+    decentralized = false;
+    Nprime = [];
+    destinationNode = new Node;
+    halt = false;
+    labelChar = "A";
+}
+
+function createReset(){
+    nodesEdge = false;
+    nodesButton = false;
+    clearButton = false;
+    resetDiagram = false;
+    centralized = false;
+    decentralized = false;
+    for (var i = 0; i < circles.length; i++){
+      circles[i].rgb = [255,255,255];
+      circles[i].dOfA = 9999;
+      circles[i].pOfA = '';
+    }
+    for(var i = 0; i < edges.length; i++){
+      edges[i].rgb = [255,255,255];
+    }
+    Nprime = [];
+    inputDelay = 1000;
 }
 
 function djikstra(startNode, destNode){
@@ -240,7 +285,7 @@ function mousePressed() {
   if (nodesButton == true && mouseX > 50 && mouseY > 50){
       circles.push(new Node(mouseX, mouseY));
   }
-  
+
   //creating edges
   if (nodesEdge == true && mouseX > 50 && mouseY > 50){
     for (var i = 0; i < circles.length; i++) {
