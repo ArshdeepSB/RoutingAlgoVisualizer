@@ -124,6 +124,8 @@ function clearDiagram(){
     destinationNode = new Node;
     halt = false;
     labelChar = "A";
+    document.getElementById('console-contents').innerHTML = ''
+    console.clear();
 }
 
 function createReset(){
@@ -143,6 +145,8 @@ function createReset(){
     }
     Nprime = [];
     inputDelay = 1000;
+    document.getElementById('console-contents').innerHTML = ''
+    console.clear();
 }
 
 function djikstra(startNode, destNode){
@@ -234,7 +238,16 @@ function distanceVector(startNode, destNode) {
     distanceVectors.get(edge.node1.label).set(edge.node2.label, { distance: edge.weight, nextHop: edge.node2.label });
     distanceVectors.get(edge.node2.label).set(edge.node1.label, { distance: edge.weight, nextHop: edge.node1.label });
   }
-
+  console.log("At T = 0:");
+  console.log("");
+  for (let [nodeLabel, nodeDistances] of distanceVectors) {
+    console.log("Routing table for node " + nodeLabel);
+    for (let [otherLabel, { distance, nextHop }] of nodeDistances) {
+      console.log("\t" + otherLabel + ": distance=" + distance + ", nextHop=" + nextHop);
+    }
+    console.log('');
+  }
+  
   while (updated) {
     updated = false;
     for (let node of circles) {
@@ -263,12 +276,13 @@ function distanceVector(startNode, destNode) {
       }
     }
   }
-  
+  console.log("----------------------------");
   for (let [nodeLabel, nodeDistances] of distanceVectors) {
-    console.log("Routing table for node " + nodeLabel);
+    console.log("Final routing table for node " + nodeLabel);
     for (let [otherLabel, { distance, nextHop }] of nodeDistances) {
       console.log("\t" + otherLabel + ": distance=" + distance + ", nextHop=" + nextHop);
     }
+    console.log('');
   }
 
   console.log("Distance from " + startNode.label + " to " + destNode.label + " is " +
@@ -329,7 +343,7 @@ function mousePressed() {
         tempEdges.push(circles[k]);
       }
       if (tempEdges.length == 2) {
-        print(tempEdges[0], tempEdges[1]);
+        // print(tempEdges[0], tempEdges[1]);
         tempEdges[0].rgb = [255, 0, 0];
         tempEdges[1].rgb = [0, 255, 0];
         distanceVector(tempEdges[0], tempEdges[1]); //run the distance vector algorithm
