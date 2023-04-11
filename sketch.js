@@ -9,7 +9,7 @@ let labelChar = '@';
 let weightInput;
 let inputDelay = 1000;
 
-
+//Printing console to Page
 (function() {
   let oldLog = console.log;
   console.log = function(message) {
@@ -23,6 +23,8 @@ let inputDelay = 1000;
 let Nprime = [];
 let destinationNode = new Node;
 let halt = false;
+
+
 //setup function only runs once at the start
 function setup() {
   //create the area we will be working in 
@@ -79,41 +81,33 @@ function startCent(){
   nodesButton = false; 
   nodesEdge = false;
   centralized = true; // disables all other buttons
+  decentralized = false;
 }
 
 function startDec() {
   nodesButton = false;
   nodesEdge = false;
   decentralized = true; // disables all other buttons
+  centralized = false;
 }
 
 
 function createNodes(){
-  if(nodesEdge == false){
-    nodesButton = true;
-  }
-  else{
     nodesEdge = false; 
     nodesButton = true;
-  }
 }
 
 function createEdges(){
-  if(nodesButton == false){
-    nodesEdge = true;
-  }
-  else{
     nodesButton = false; 
     nodesEdge = true;
-  }
 }
 
 function djikstra(startNode, destNode){
   //initialization
   Nprime.push(startNode) // adding source node to Nprime
-  console.log("Our start node is: " + startNode.label);
+  console.log("Our start node is: " + startNode.label + "\n");
   //check all edges adjacent to source node
-  console.log("Initialize the D(a) and p(a) for adjacent nodes: ");
+  console.log("Initialize the D(a) and p(a) for adjacent nodes: "+ "\n");
   for (var i = 0; i < edges.length; i++){
     if(edges[i].contains(Nprime[0])){ 
       // print(edges[i]); //debug
@@ -122,7 +116,7 @@ function djikstra(startNode, destNode){
       //initialize the D(a) and p(a) for adjacent nodes
       edges[i].otherNode(Nprime[0]).dOfA = edges[i].weight;
       edges[i].otherNode(Nprime[0]).pOfA = Nprime[0].label;
-      console.log(edges[i].otherNode(Nprime[0]).label +  ": D(a): " +   edges[i].otherNode(Nprime[0]).dOfA +  " p(a):" +  edges[i].otherNode(Nprime[0]).pOfA);
+      console.log(edges[i].otherNode(Nprime[0]).label +  ": D(a): " +   edges[i].otherNode(Nprime[0]).dOfA +  " p(a):" +  edges[i].otherNode(Nprime[0]).pOfA + "\n");
     }
   }
 
@@ -130,14 +124,16 @@ function djikstra(startNode, destNode){
     // find a not in N' st D(a) is minimum
     let min = circles[0]
     for (var i = 0; i < circles.length; i++){
-      if(Nprime.includes(circles[i]) == false && circles[i].dOfA < min.dOfA){
+      if(Nprime.includes(circles[i]) === false && circles[i].dOfA <= min.dOfA){
         min = circles[i];
       }
     }
-    console.log("Find edge with lowest D(a): " + min.label);
     Nprime.push(min);
+    console.log("Push the node with minimum D(a) into N':")
+    for(var i = 0; i < Nprime.length; i++){
+      console.log(Nprime[i].label);
+    }
     // print("min", min) //debug
-
     //change color for selected node
     for (var i = 0; i < edges.length; i++){
       if(edges[i].contains(min) && edges[i].containsLabel(min.pOfA)){
@@ -150,12 +146,13 @@ function djikstra(startNode, destNode){
         inputDelay = inputDelay + 1000;
       }
     }
-
+    console.log("");
+    console.log("Current node is " + min.label);
+    console.log("Update the D(a) and p(a) for adjacent nodes to: " + min.label + "\n");
     //check all edges adjacent to B node that are not in N'
     for (var i = 0; i < edges.length; i++){
       if(edges[i].contains(min) && Nprime.includes(edges[i].otherNode(min)) == false){
         // print("adjacent", edges[i]);
-        console.log();
         //color these edges red
         edges[i].rgb = [255,0,0];
 
@@ -165,10 +162,12 @@ function djikstra(startNode, destNode){
         if(edges[i].weight < adjNode.dOfA){ //updates D(a) if new edge has lower cost
           adjNode.dOfA = edges[i].weight;
           adjNode.pOfA = min.label;
+          console.log("update " +  adjNode.label + " to D(a)=" +  adjNode.dOfA + "and p(a)=" + adjNode.pOfA);
         }
       }
     }
   }
+  console.log("Finished Centralized Algorithm");
 }
 
 
@@ -272,8 +271,8 @@ function mousePressed() {
       }
       if(tempEdges.length == 2){
           // print(tempEdges[0], tempEdges[1]);
-          tempEdges[0].rgb = [255,0,0];
-          tempEdges[1].rgb = [0,255,0];
+          tempEdges[0].rgb = [0,255,0];
+          tempEdges[1].rgb = [255,0,0];
           djikstra(tempEdges[0], tempEdges[1]); //run the djikstra algo
           tempEdges = [];
           break;
