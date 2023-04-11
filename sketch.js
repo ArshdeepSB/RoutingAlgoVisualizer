@@ -202,6 +202,13 @@ function distanceVector(startNode, destNode) {
       }
     }
   }
+  
+  for (let [nodeLabel, nodeDistances] of distanceVectors) {
+    console.log("Routing table for node " + nodeLabel);
+    for (let [otherLabel, { distance, nextHop }] of nodeDistances) {
+      console.log("\t" + otherLabel + ": distance=" + distance + ", nextHop=" + nextHop);
+    }
+  }
 
   console.log("Distance from " + startNode.label + " to " + destNode.label + " is " +
     distanceVectors.get(startNode.label).get(destNode.label).distance);
